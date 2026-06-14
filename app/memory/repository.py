@@ -17,11 +17,6 @@ class MemoryRepository:
         return self.conn.execute("SELECT * FROM events ORDER BY timestamp DESC LIMIT ?",(limit,)).fetchall()
     def mark_events_processed(self, ids:list[str]) -> None:
         self.conn.executemany("UPDATE events SET processed=1 WHERE id=?", [(i,) for i in ids]); self.conn.commit()
-    def important_events(self, limit:int=10) -> list[sqlite3.Row]:
-        return self.conn.execute("SELECT * FROM events WHERE archived=0 ORDER BY importance DESC, timestamp DESC LIMIT ?",(limit,)).fetchall()
-    def search_events(self, query:str, limit:int=10) -> list[sqlite3.Row]:
-        pattern=f"%{query}%"
-        return self.conn.execute("SELECT * FROM events WHERE text LIKE ? ORDER BY importance DESC, timestamp DESC LIMIT ?",(pattern,limit)).fetchall()
     def create_episode(self, summary:str, event_ids:list[str], importance:float=.5, tags:list[str]|None=None) -> str:
         eid = new_id("epi"); now=utc_now_iso(); payload=json.dumps(event_ids); tag=json.dumps(tags or [])
         self.conn.execute("INSERT INTO episodes(id,start_time,end_time,summary,importance,source_event_ids,tags) VALUES(?,?,?,?,?,?,?)",(eid,now,now,summary,importance,payload,tag)); self.conn.commit(); return eid
@@ -40,8 +35,6 @@ class MemoryRepository:
     def add_proactive(self, reason:str, text:str, importance:float=.5, status:str="candidate") -> str:
         pid=new_id("pro"); self.conn.execute("INSERT INTO proactive_messages(id,created_at,reason,text,status,importance) VALUES(?,?,?,?,?,?)",(pid,utc_now_iso(),reason,text,status,importance)); self.conn.commit(); return pid
     def recent_proactive(self, limit:int=10): return self.conn.execute("SELECT * FROM proactive_messages ORDER BY created_at DESC LIMIT ?",(limit,)).fetchall()
-    def proactive_count_since(self, since_iso:str) -> int:
-        row=self.conn.execute("SELECT COUNT(*) FROM proactive_messages WHERE created_at >= ?",(since_iso,)).fetchone(); return int(row[0])
     def get_kv(self, table:str, key:str) -> Any|None:
         row=self.conn.execute(f"SELECT value FROM {table} WHERE key=?",(key,)).fetchone(); return json.loads(row[0]) if row else None
     def set_kv(self, table:str, key:str, value:Any) -> None:

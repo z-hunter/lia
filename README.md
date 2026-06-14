@@ -50,24 +50,6 @@ Run one thinking cycle manually:
 python -m app.tools.run_thinking_loop
 ```
 
-Run sleep maintenance manually:
-
-```bash
-python -m app.tools.run_sleep_maintenance
-```
-
-Generate a proactive candidate manually:
-
-```bash
-python -m app.tools.run_initiative_engine
-```
-
-Run a mock chat turn through the conversation pipeline:
-
-```bash
-python -m app.tools.run_mock_chat
-```
-
 Run the smoke test:
 
 ```bash
@@ -122,17 +104,3 @@ Stage 2 can add real service adapters behind the existing interfaces:
 8. More sophisticated belief revision, contradiction detection, and autobiographical consolidation.
 
 The Stage 1 design keeps these extensions isolated behind interfaces so the durable personality substrate remains stable while cognition and tools improve.
-
-## What Can Still Be Built in Cloud Mode Before Windows Local Development?
-
-Cloud mode is ideal for everything that does **not** require local credentials, desktop browser control, or Windows-specific runtime checks. Useful next steps before moving to the Windows machine include:
-
-- Expand repository APIs and retrieval contracts while keeping SQLite as the operational source of truth.
-- Build richer mock conversation flows around the durable state, relationship model, beliefs, tasks, and open threads.
-- Add command/CLI entrypoints for manual thinking, sleep maintenance, initiative generation, and mock chat cycles.
-- Improve safety policy code such as proactive-message rate limits, quiet-hour checks, and confirmation boundaries.
-- Add more smoke and unit tests with temporary SQLite databases.
-- Document Stage 2 integration seams for Ollama, Claude, Telegram, Google APIs, and Playwright.
-- Create sample vault notes and fixtures that prove the Obsidian export format is stable.
-
-Cloud mode should **not** be used for final Telegram deployment, real Google OAuth flows, real Playwright browser automation against logged-in accounts, or Ollama performance tuning on the target Windows hardware.
